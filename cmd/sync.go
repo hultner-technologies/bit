@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -20,9 +21,22 @@ sync local-branch
 		// if possibly squashed
 		if IsDiverged() {
 			RunInTerminalWithColor("git", []string{"status", "-sb", "--untracked-files=no"})
-			yes := AskConfirm("Force (destructive) push to origin/" + CurrentBranch() + "?")
-			if yes {
+
+			ans := ""
+			prompt := &survey.Select{
+				Message: "Branch is diverged from origin/upstream – handle by...",
+				Options: []string{
+					"Rebase on origin/upstream",
+					"Force (destructive) push to origin/" + CurrentBranch(),
+					"Cancel"},
+			}
+			survey.AskOne(prompt, &ans)
+			if strings.HasPrefix(ans, "Rebase") {
+				RunInTerminalWithColor("git", []string{"pull", "-r"})
+			} else if strings.HasPrefix(ans, "Force") {
 				RunInTerminalWithColor("git", []string{"push", "--force-with-lease"})
+			} else {
+				fmt.Println("Canceling..")
 			}
 			return
 		}
