@@ -71,6 +71,7 @@ func CreateSuggestionMap(cmd *cobra.Command) (map[string]func() []prompt.Suggest
 	gitResetSuggestions := GitResetSuggestions()
 	log.Debug().Msg((time.Now().Sub(start)).String())
 	start = time.Now()
+	gitmoji := GitmojiSuggestions()
 
 	completerSuggestionMap := map[string]func() []prompt.Suggest{
 		"":         memoize([]prompt.Suggest{}),
@@ -88,6 +89,7 @@ func CreateSuggestionMap(cmd *cobra.Command) (map[string]func() []prompt.Suggest
 		}),
 		"reset": memoize(gitResetSuggestions),
 		"pr": lazyLoad(GitHubPRSuggestions),
+		"gitmoji": memoize(gitmoji),
 		//"_any": commonCommands,
 	}
 	return completerSuggestionMap, bitCmdMap

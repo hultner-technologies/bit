@@ -127,6 +127,20 @@ func BranchListSuggestions() []prompt.Suggest {
 	return suggestions
 }
 
+func GitmojiSuggestions() []prompt.Suggest {
+	gitmojiList := []string{
+		"🔒 Fix security issues",
+		"💚 Fix CI build",
+	}
+	var suggestions []prompt.Suggest
+	for _, gitmoji := range gitmojiList {
+		suggestions = append(suggestions, prompt.Suggest{
+			Text:        gitmoji,
+		})
+	}
+	return suggestions
+}
+
 func GitAddSuggestions() []prompt.Suggest {
 	fileChanges := FileChangesList()
 	var suggestions []prompt.Suggest
